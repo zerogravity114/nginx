@@ -23,7 +23,7 @@ class nginx {
 
   package { 'nginx':
     ensure  => present,
-    require => File['/etc/yum.repos.d/nginx.repo'],
+    require => File['/etc/yum.repos.d/nginx.repo'], #Make sure the repo is installed first
   }
 
   file { '/usr/share/nginx':
@@ -33,9 +33,10 @@ class nginx {
   }
 
   file { '/usr/share/nginx/html':
-    ensure => directory,
-    owner  => 'root',
-    mode   => '0755',
+    ensure  => directory,
+    owner   => 'root',
+    mode    => '0755',
+    require => File['/usr/share/nginx'],
   }
 
   file { '/etc/nginx/conf.d/default.conf':
@@ -43,7 +44,7 @@ class nginx {
     owner   => 'root',
     mode    => '0644',
     source  => 'puppet:///modules/nginx/default.conf',
-    require => Package['nginx'],
+    require => Package['nginx'], #The installer will overwrite this file, so make sure we create it after the package is installed
   }
   
   service { 'nginx':
